@@ -1,0 +1,35 @@
+// MAP Route
+ public function map()
+ {
+     $categories = Category::all();
+     return view('admin.pages.map.list', compact('categories'));
+ }
+ public function map_edit($id)
+ {
+     $dec_id = Crypt::decrypt($id);
+     $map = Category::find($dec_id);
+     return view('admin.pages.map.edit', compact('map'));
+ }
+ public function map_edit_post(Request $req)
+ {
+
+     $req->validate([
+        'slide' => 'nullable|image',
+        'name' => 'required',
+        'address' => 'required',
+        'latitute' => 'required',
+        'longitute' => 'required',
+        'floor_plan' => 'nullable|image',
+
+     ]);
+     $dec_id = Crypt::decrypt($req->id);
+     $edit =  Category::find($dec_id);
+     $edit->address = $req->address;
+     $edit->location = $req->location;
+     $edit->latitute = $req->latitute;
+     $edit->logitute = $req->longitute;
+
+     $edit->update();
+     session()->flash('success', 'Category Updated Successfully');
+     return redirect('admin/map');
+ }
