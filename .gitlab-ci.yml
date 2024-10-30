@@ -1,0 +1,17 @@
+stages:          # List of stages for jobs, and their order of execution
+  - master
+
+
+develop:
+  image: alpine
+  stage: master
+  script:
+    - apk add --no-cache openssh-client bash
+    - eval `ssh-agent -s`
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - bash -c "ssh-add <(echo '$SSH_PRIVATE_KEY')"
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh root@142.93.50.146 'cd /var/www/developer/data/www/stage440.yourdesigndemo.net/brewery && git pull'
+  only:
+    - master
